@@ -45,7 +45,10 @@ class URL:
             s = ctx.wrap_socket(s, server_hostname=self.host)
         s.connect((self.host, self.port))
         s.send(("GET {} HTTP/1.0\r\n".format(self.path) +
-                "Host: {}\r\n\r\n".format(self.host))
+                "Host: {}\r\n".format(self.host) +
+                "Connection: close\r\n" +
+                "User-Agent: my_web_browser/1.0\r\n" +  # Dummy value fo now
+                "\r\n")
                .encode("utf8"))
         response = s.makefile("r", encoding="utf8", newline="\r\n")
         statusline = response.readline()
@@ -65,4 +68,5 @@ class URL:
 
 if __name__ == "__main__":
     import sys
+
     load(URL(sys.argv[1]))
