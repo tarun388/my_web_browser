@@ -1,3 +1,4 @@
+import os.path
 import socket
 import ssl
 
@@ -14,24 +15,30 @@ def show(body):
 
 
 def load(url):
-    body = url.request()
-    show(body)
+    if url.scheme in ["http", "https"]:
+        body = url.request()
+        show(body)
+    elif url.scheme == "file":
+        body = url.read_dir_file()
+        print(body)
 
 
 class URL:
     def __init__(self, url):
         self.scheme, url = url.split("://", 1)
-        assert self.scheme in ["http", "https"]
-        if self.scheme == "http":
-            self.port = 80
-        elif self.scheme == "https":
-            self.port = 443
+        assert self.scheme in ["http", "https", "file"]
         if '/' not in url:
             url = url + "/"
-        self.host, url = url.split("/", 1)
-        if ":" in self.host:
-            self.host, port = self.host.split(":", 1)
-            self.port = int(port)
+
+        if self.scheme in ["http", "https"]:
+            if self.scheme == "http":
+                self.port = 80
+            elif self.scheme == "https":
+                self.port = 443
+            self.host, url = url.split("/", 1)
+            if ":" in self.host:
+                self.host, port = self.host.split(":", 1)
+                self.port = int(port)
         self.path = "/" + url
 
     def request(self):
@@ -65,8 +72,20 @@ class URL:
         s.close()
         return body
 
+    def read_dir_file(self):
+        assert os.path.exists(self.path)
+        body = ""
+        if os.path.isdir(self.path):
+            body = "\n".join(os.listdir(self.path))
+        elif os.path.isfile(self.path):
+            body = open(self.path).read()
+        return body
+
 
 if __name__ == "__main__":
     import sys
-
-    load(URL(sys.argv[1]))
+    if len(sys.argv) == 1:
+        # By default root dir
+        load(URL("file://"))
+    else:
+        load(URL(sys.argv[1]))
