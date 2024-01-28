@@ -141,8 +141,9 @@ class Browser:
         self.draw()
 
     def scrollup(self, e):
-        self.scroll -= SCROLL_STEP
-        self.draw()
+        if self.scroll > 0:
+            self.scroll -= SCROLL_STEP
+            self.draw()
 
 
 if __name__ == "__main__":
