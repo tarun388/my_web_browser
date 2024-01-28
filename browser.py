@@ -26,7 +26,13 @@ def layout(text):
     cursor_x, cursor_y = HSTEP, VSTEP
     for c in text:
         display_list.append((cursor_x, cursor_y, c))
-        cursor_x += HSTEP
+        # Line breaks
+        if c == "\n":
+            cursor_x = HSTEP
+            # Increase y, i.e. move to next line
+            cursor_y += 1.2 * VSTEP
+        else:
+            cursor_x += HSTEP
         if cursor_x >= WIDTH - HSTEP:
             cursor_y += VSTEP
             cursor_x = HSTEP
