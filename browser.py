@@ -39,13 +39,13 @@ def layout(text):
     return display_list
 
 
-def load(url):
-    if url.scheme in ["http", "https"]:
-        body = url.request()
-        # show(body)
-    elif url.scheme == "file":
-        body = url.read_dir_file()
-        print(body)
+# def load(url):
+#     if url.scheme in ["http", "https"]:
+#         body = url.request()
+#         # show(body)
+#     elif url.scheme == "file":
+#         body = url.read_dir_file()
+#         print(body)
 
 
 class URL:
@@ -123,7 +123,11 @@ class Browser:
         self.window.bind("<MouseWheel>", self.mouseWheel)
 
     def load(self, url):
-        body = url.request()
+        body = ""
+        if url.scheme in ["http", "https"]:
+            body = url.request()
+        elif url.scheme == "file":
+            body = url.read_dir_file()
         text = lex(body)
         self.display_list = layout(text)
         self.draw()
